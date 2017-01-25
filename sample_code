@@ -1,0 +1,60 @@
+
+# Pick an image and show the image.
+image = imread('mscoco/%s' % train_data['images'][sampleImageIndex])
+tiny_image = imresize(image, (16, 16), interp = 'nearest')
+plt.imshow(tiny_image)
+
+# Compute features for the training set.
+train_features = np.zeros((len(train_data['images']), 768), dtype=np.float)  # 768 = 16 * 16 * 3
+for (counter, image_id) in enumerate(train_data['images']):
+    image = imread('mscoco/%s' % image_id)
+    tiny_image = imresize(image, (16, 16), interp = 'nearest')
+    train_features[counter, :] = tiny_image.flatten().astype(np.float) / 255
+    if (1 + counter) % 10000 == 0:
+        print ('Computed features for %d train-images' % (1 + counter))
+
+# Compute features for the validation set.
+val_features = np.zeros((len(val_data['images']), 768), dtype=np.float)  # 768 = 16 * 16 * 3
+for (counter, image_id) in enumerate(val_data['images']):
+    image = imread('mscoco/%s' % image_id)
+    tiny_image = imresize(image, (16, 16), interp = 'nearest')
+    val_features[counter, :] = tiny_image.flatten().astype(np.float) / 255
+    if (1 + counter) % 10000 == 0:
+        print ('Computed features for %d val-images' % (1 + counter))
+
+pickle.dump(train_features, open('train_features.p', 'w'))  # Store in case this notebook crashes.
+pickle.dump(val_features, open('val_features.p', 'w'))  # Store in case this notebook crashes.
+
+
+
+# Try changing this image.
+sampleTestImageId = 197
+
+# Retrieve the feature vector for this image.
+sampleImageFeature = val_features[sampleTestImageId : sampleTestImageId + 1, :]
+# Compute distances between this image and the training set of images.
+distances = cdist(sampleImageFeature, train_features, 'correlation')
+# Compute ids for the closest images in this feature space.
+nearestNeighbors = np.argsort(distances[0, :])  # Retrieve the nearest neighbors for this image.
+
+# Show the image and nearest neighbor images.
+plt.imshow(imread('mscoco/%s' % val_data['images'][sampleTestImageId])); plt.axis('off')
+plt.title('query image:')
+fig = plt.figure()
+for (i, neighborId) in enumerate(nearestNeighbors[:5]):
+    fig.add_subplot(1, 5, i + 1)
+    plt.imshow(imread('mscoco/%s' % train_data['images'][neighborId]))
+    plt.axis('off')
+print('Query Image Description: ' + val_data['captions'][sampleTestImageId] + '\n')
+for (i, neighborId) in enumerate(nearestNeighbors[:5]):
+    print('(' + str(i) + ')' + train_data['captions'][neighborId])
+from nltk import word_tokenize
+
+reference = [w.lower() for w in word_tokenize(val_data['captions'][sampleTestImageId])]
+candidate = [w.lower() for w in word_tokenize(train_data['captions'][nearestNeighbors[0]])]
+
+print ('ref', reference)
+print ('cand', candidate)
+
+bleu_score = float(len(set(reference) & set(candidate))) / len(candidate)
+print("BLEU-1 score = ", bleu_score)
