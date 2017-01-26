@@ -75,7 +75,7 @@ for index in range(0,total_images):
     # Retrieve the feature vector for this image.
     sampleImageFeature = val_features[sampleTestImageId : sampleTestImageId + 1, :]
     # Compute distances between this image and the training set of images.
-    distances = cdist(sampleImageFeature, train_features, 'correlation')
+    distances = cdist(sampleImageFeature, train_features, 'euclidean')
     # Compute ids for the closest images in this feature space.
     nearestNeighbors = np.argsort(distances[0, :])  # Retrieve the nearest neighbors for this image.
     #print ("NN = "+str(len(nearestNeighbors)))
@@ -91,5 +91,6 @@ for index in range(0,total_images):
     total_bleu_score += bleu_score
     if index %500 == 0:
         print index
+        print("Average BLEU-1 score HOG-Feature = ", (total_bleu_score * 1.0) / index)
 print("Average BLEU-1 score HOG-Feature = ", (total_bleu_score*1.0)/total_images)
 
