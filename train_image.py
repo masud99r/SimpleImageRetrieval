@@ -1,13 +1,8 @@
 import pickle
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.misc import imread, imresize
-from scipy.spatial.distance import cdist
-from nltk import word_tokenize
-import random
 from skimage.feature import hog
 from skimage import data, color, exposure
-#%matplotlib inline #need to check here
 import time
 # Load data and show some images.
 data = pickle.load(open('mscoco_small.p'))
@@ -22,7 +17,6 @@ for (counter, image_id) in enumerate(train_data['images']):
 
     image = imread('mscoco/%s' % image_id)
     image = color.rgb2gray(image)
-    #tiny_image = imresize(image, (16, 16), interp = 'nearest')
     fd, hog_image = hog(image, orientations=8, pixels_per_cell=(16, 16),
                         cells_per_block=(1, 1), visualise=True)
 

@@ -1,13 +1,8 @@
 import pickle
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.misc import imread, imresize
-from scipy.spatial.distance import cdist
-from nltk import word_tokenize
-import random
 from skimage.feature import hog
 from skimage import data, color, exposure
-#%matplotlib inline #need to check here
 import time
 # Load data and show some images.
 data = pickle.load(open('mscoco_small.p'))
@@ -39,4 +34,4 @@ for (counter, image_id) in enumerate(val_data['images']):
 
 print ("Start dumping val")
 pickle.dump(val_features, open('only_val_features_hog.p', 'w'))  # Store in case this notebook crashes.
-print ("Start dumping val")
+print ("End dumping val")

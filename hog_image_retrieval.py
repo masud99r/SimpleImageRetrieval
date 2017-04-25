@@ -42,7 +42,7 @@ for counter in range(0,image_in_val):
     image = imread('mscoco/%s' % image_id)
     image = color.rgb2gray(image)
     #tiny_image = imresize(image, (16, 16), interp = 'nearest')
-    fd, hog_image = hog(image, orientations=8, pixels_per_cell=(16, 16),
+    fd, hog_image = hog(image, orientations=8, pixels_per_cell=(8, 8),
                         cells_per_block=(1, 1), visualise=True)
     val_features[counter, :] = hog_image.flatten().astype(np.float)
     if (1 + counter) % 100 == 0:
@@ -98,8 +98,8 @@ for index in range(0,total_images):
 
     bleu_score = float(len(set(reference) & set(candidate))) / len(candidate)
     total_bleu_score += bleu_score
-    if index %100 == 0:
+    if index %10 == 0:
         print index
-        print("Average BLEU-1 score HOG-Feature = ", (total_bleu_score * 1.0) / index)
+        print("Average BLEU-1 score HOG-Feature = ", (total_bleu_score * 1.0) / (index+1))
 print("Average BLEU-1 score HOG-Feature = ", (total_bleu_score*1.0)/total_images)
 print("Time taken: %s seconds " % (time.time() - start_time))
